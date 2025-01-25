@@ -4,7 +4,32 @@
 @tailwind components;
 @tailwind utilities;
 
-/* html {
-  font-family: "Poppins", serif;
-} */
+@layer base {
+  html {
+    font-family: "Popins", sans-serif;
+  }
+
+  body {
+    background-color: #fdfeff;
+    overflow-x: hidden;
+  }
+}
+
+@layer components {
+  .input-box {
+    @apply w-full text-sm bg-violet-600/5 rounded px-5 py-3 mb-4 outline-none;
+  }
+
+  .btn-primary {
+    @apply w-full text-sm font-medium text-white bg-violet-500 shadow-lg shadow-violet-200/50 p-[10px] rounded-full my-1 hover:bg-violet-100 hover:text-primary;
+  }
+
+  .btn-light {
+    @apply bg-violet-50 text-primary shadow-violet-100/0 border border-violet-100 hover:bg-primary hover:text-white
+  }
+
+  .login-ui-box {
+    @apply w-80 h-[450px] rounded-full bg-primary absolute rotate-45
+  }
+}
 
