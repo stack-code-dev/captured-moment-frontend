@@ -4,6 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+.rdp-root {
+  --rdp-accent-color: #8c52ff !important;
+  --rdp-day_button-border-radius: 30% !important;
+  --rdp-accent-background-color: #dffbff !important;
+  --rdp-selected-font: bold medium var(--rdp-font-family) !important;
+}
+
 /* Custom scrollbar styles */
 .scrollbar::-webkit-scrolbar {
   width: 3px;
@@ -62,6 +69,10 @@
 
   .btn-small {
     @apply flex items-center gap-1 text-xs font-medium bg-violet-50 text-primary shadow-violet-100/0 border border-violet-100 hover:bg-primary hover:text-white rounded px-3 py-[3px];
+  }
+
+  .btn-delete {
+    @apply bg-rose-50 text-rose-500 shadow-rose-100/0 border border-rose-100 hover:bg-rose-500 hover:text-white;
   }
 }
 

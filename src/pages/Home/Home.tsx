@@ -134,6 +134,7 @@ export const Home = () => {
         </div>
       </main>
 
+      {/* Add & Edit Captured Moment */}
       <Modal
         isOpen={openAddEditModal.isShow}
         onRequestClose={() => {}}

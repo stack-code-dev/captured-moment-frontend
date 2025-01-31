@@ -1,9 +1,11 @@
 import { MdAdd, MdClose } from "react-icons/md"
 import { DateSelector } from "../../components/Input/DateSelector"
 import { useState } from "react"
+import { ImageSelector } from "../../components/Input/ImageSelector"
 
 export const AddEditTravelMoment = () => {
   const [visitedDate, setVisitedDate] = useState<Date>(new Date('2025-01-21T02:46:19.183Z'))
+  const [image, setImage] = useState<File | string | null>("")
 
   return (
     <section className="relative">
@@ -27,7 +29,7 @@ export const AddEditTravelMoment = () => {
 
 
       <main>
-        <form className="flex-1 flex flex-col gap-2 pt-4">
+        <div className="flex-1 flex flex-col gap-2 pt-4">
           <label className="input-label">TITLE</label>
           <input 
             type="text" 
@@ -43,9 +45,10 @@ export const AddEditTravelMoment = () => {
             />
           </div>
 
-          <div>
-            SELETOR DE IMAGEM // UPLOAD
-          </div>
+          <ImageSelector
+            image={image}
+            setImage={setImage}
+          />
 
           <div className="flex flex-col gap-2 mt-4">
             <label className="input-label">MOMENT</label>
@@ -60,7 +63,7 @@ export const AddEditTravelMoment = () => {
           <div className="pt-3">
             <label>VISITED LOCATIONS</label>
           </div>
-        </form>
+        </div>
       </main>
     </section>
   )
