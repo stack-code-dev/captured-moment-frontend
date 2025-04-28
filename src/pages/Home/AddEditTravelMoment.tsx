@@ -1,4 +1,6 @@
 import { MdAdd, MdClose, MdUpdate } from "react-icons/md"
+import { BsStars } from "react-icons/bs";
+import { ImSpinner2 } from "react-icons/im";
 import { DateSelector } from "../../components/Input/DateSelector"
 import { useEffect, useState } from "react"
 import { ImageSelector } from "../../components/Input/ImageSelector"
@@ -35,6 +37,9 @@ export const AddEditTravelMoment = ({
   const [title, setTitle] = useState<string>(momentInfo?.title || "")
   const [memoryImg, setMemoryImg] = useState<File | string | null>(momentInfo?.imageUrl || "")
   const [moment, setMoment] = useState<string>(momentInfo?.story || "")
+  const [loadingGenerateMomentIA, setLoadingGenerateMomentIA] = useState<boolean>(false)
+  const [typedText, setTypedText] = useState<string>("")
+  const [isIATyping, setIsIATyping] = useState<boolean>(false)
   const [visitedDate, setVisitedDate] = useState<Date>(momentInfo?.visitedDate ? new Date(momentInfo?.visitedDate) : new Date())
   const [visitedLocation, setVisitedLocation] = useState<string[]>(momentInfo?.visitedLocation || [])
   const [error, setError] = useState<string | null>(null)
@@ -143,6 +148,51 @@ export const AddEditTravelMoment = ({
     }
   }
 
+  // Lida com a chamada da API com IA para gera o texto
+  const handleGenerateIA = async () => {
+    if (loadingGenerateMomentIA) {
+      return
+    }
+
+    try{
+      setLoadingGenerateMomentIA(true)
+      const response = await axiosInstance.post(`/ia`, {text: moment})
+
+      typeText(response.data)
+
+    } catch (error) {
+      toast.error("Text generate fail. Please try again later!")
+
+      if(axios.isAxiosError(error)) {
+        if(error.response && error.response.data && error.response.data.message) {
+          setError(error.response.data.message)
+        } else {
+          console.log("An unexpected error ocurred. Please try again.", error)
+        }
+      }
+    } finally {
+      setLoadingGenerateMomentIA(false)
+    }
+  }
+
+  // Lida com o efeito de digitação
+  const typeText = (text: string) => {
+    setIsIATyping(true)
+    setTypedText(text[0])
+    let index = 0
+    
+    // montagem de texto
+    const interval = setInterval(() => {
+      setTypedText((prev) => prev + text[index])
+      index++
+  
+      if(index === text.length -1) {
+        clearInterval(interval)
+        setIsIATyping(false)
+      }
+    }, 30)
+  }
+
   const handleDeleteMomentImg = async () => {
     const deleteImgResponse = await axiosInstance.delete('/delete-upload', {
       params: {
@@ -236,14 +286,31 @@ export const AddEditTravelMoment = ({
           />
 
           <div className="flex flex-col gap-2 mt-4">
-            <label className="input-label">MOMENT</label>
+            <header className="flex justify-between">
+              <label className="input-label">MOMENT</label>
+              
+              <button
+                disabled={!moment || isIATyping} 
+                className={`border p-0.5 rounded-md text-xl
+                  ${moment && !isIATyping
+                    ? 'bg-slate-50 border-slate-200/50 text-violet-500 hover:bg-primary hover:text-white'
+                    : 'bg-slate-100 border-slate-300 text-slate-400 cursor-not-allowed opacity-50'
+                  }
+              `}
+                onClick={handleGenerateIA}
+              >
+                {loadingGenerateMomentIA ? <ImSpinner2 className="animate-spin" /> : <BsStars />}
+              </button>
+            </header>
             <textarea 
+              disabled={loadingGenerateMomentIA || isIATyping}
               className="text-sm text-slate-950 outline-none bg-slate-50 p-2 rounded"
               placeholder="Your Moment"
               rows={10}
-              value={moment}
+              value={typedText || moment}
               onChange={({target}) => {
                 setMoment(target.value)
+                setTypedText("")
               }}
             />
           </div>
