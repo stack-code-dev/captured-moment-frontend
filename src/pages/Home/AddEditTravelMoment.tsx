@@ -148,17 +148,21 @@ export const AddEditTravelMoment = ({
     }
   }
 
-  // Lida com a chamada da API para gerar o texto
-  const handleGereneteIA = async () => {
-    if(!moment || loadingGenerateMomentIA || isIATyping) return
+  // Lida com a chamada da API com IA para gera o texto
+  const handleGenerateIA = async () => {
+    if (loadingGenerateMomentIA) {
+      return
+    }
 
-    try {
-      setLoadingGenerateMomentIA(true);
-      const response = await axiosInstance.post(`/ia`, { text: moment })
+    try{
+      setLoadingGenerateMomentIA(true)
+      const response = await axiosInstance.post(`/ia`, {text: moment})
 
       typeText(response.data)
-      
+
     } catch (error) {
+      toast.error("Text generate fail. Please try again later!")
+
       if(axios.isAxiosError(error)) {
         if(error.response && error.response.data && error.response.data.message) {
           setError(error.response.data.message)
@@ -176,12 +180,13 @@ export const AddEditTravelMoment = ({
     setIsIATyping(true)
     setTypedText(text[0])
     let index = 0
-  
+    
+    // montagem de texto
     const interval = setInterval(() => {
       setTypedText((prev) => prev + text[index])
       index++
   
-      if(index === text.length - 1) {
+      if(index === text.length -1) {
         clearInterval(interval)
         setIsIATyping(false)
       }
@@ -283,14 +288,16 @@ export const AddEditTravelMoment = ({
           <div className="flex flex-col gap-2 mt-4">
             <header className="flex justify-between">
               <label className="input-label">MOMENT</label>
-              <button 
-                disabled={!moment || isIATyping}
-                className={`border p-0.5 rounded-md text-xl transition-colors
-                  ${ moment && !isIATyping
-                    ? "bg-slate-50 border-slate-200/50 text-violet-500 hover:bg-primary hover:text-white"
-                    : "bg-slate-100 border-slate-300 text-slate-400 cursor-not-allowed opacity-50"
-                  }`}
-                onClick={handleGereneteIA} 
+              
+              <button
+                disabled={!moment || isIATyping} 
+                className={`border p-0.5 rounded-md text-xl
+                  ${moment && !isIATyping
+                    ? 'bg-slate-50 border-slate-200/50 text-violet-500 hover:bg-primary hover:text-white'
+                    : 'bg-slate-100 border-slate-300 text-slate-400 cursor-not-allowed opacity-50'
+                  }
+              `}
+                onClick={handleGenerateIA}
               >
                 {loadingGenerateMomentIA ? <ImSpinner2 className="animate-spin" /> : <BsStars />}
               </button>
